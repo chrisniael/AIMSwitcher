@@ -47,35 +47,63 @@ void ShowUsage() {
         << std::endl;
 }
 
-int main(int argc, char** argv) {
-    if (argc == 1) {
-        ShowUsage();
-    }
-    else if (strcmp(argv[1], "--im") == 0) {
-        if (argc == 2)
-            std::cout << GetCurrentInputMethod() << std::endl;
-        else
-            SwitchInputMethod(atoi(argv[2]));
-    }
-    else if (strcmp(argv[1], "--imm") == 0) {
-        if (argc == 2)
-            std::cout << GetCurrentInputMethodMode() << std::endl;
-        else
-            SwitchInputMethodMode(atoi(argv[2]));
-    }
-    else if (strcmp(argv[1], "--immt") == 0 && argc == 4) {
-        int mode1 = atoi(argv[2]);
-        int mode2 = atoi(argv[3]);
-        int curMode = GetCurrentInputMethodMode();
-        if (curMode == mode1) {
-            SwitchInputMethodMode(mode2);
-        }
-        else {
-            SwitchInputMethodMode(mode1);
-        }
+// 全局钩子句柄
+HHOOK hKeyboardHook;
+
+// 回调函数，在捕获到指定的快捷键组合时执行
+void OnWinSpacePressed() {
+    std::cout << "Win + Space pressed!" << std::endl;
+    // 在此处添加你希望执行的函数逻辑
+
+    int mode1 = 0;
+    int mode2 = 1025;
+    int curMode = GetCurrentInputMethodMode();
+    if (curMode == mode1) {
+        SwitchInputMethodMode(mode2);
     }
     else {
-        ShowUsage();
+        SwitchInputMethodMode(mode1);
     }
+}
+
+// 低级键盘钩子回调函数
+LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
+    if (nCode == HC_ACTION && wParam == WM_KEYDOWN) {
+        KBDLLHOOKSTRUCT* pKeyboard = (KBDLLHOOKSTRUCT*)lParam;
+
+        // 检查是否按下了Win键
+        bool bIsWinPressed = (GetAsyncKeyState(VK_LWIN) & 0x8000) || (GetAsyncKeyState(VK_RWIN) & 0x8000);
+
+        // 检查是否按下了Space键
+        bool bIsSpacePressed = (pKeyboard->vkCode == VK_SPACE);
+
+        if (bIsWinPressed && bIsSpacePressed) {
+            OnWinSpacePressed();
+            return 1; // 某些组合键可能需要返回1以防止传递到其他程序或系统
+        }
+    }
+    return CallNextHookEx(hKeyboardHook, nCode, wParam, lParam);
+}
+
+int main(int argc, char** argv) {
+    // 设置全局低级键盘钩子
+    hKeyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, LowLevelKeyboardProc, GetModuleHandle(NULL), 0);
+    if (!hKeyboardHook) {
+        std::cerr << "Failed to install hook!" << std::endl;
+        return 1;
+    }
+
+    std::cout << "Hook installed. Press Win + Space to trigger the function. Press Ctrl+C to exit." << std::endl;
+
+    // 消息循环
+    MSG msg;
+    while (GetMessage(&msg, NULL, 0, 0)) {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+
+    // 卸载钩子
+    UnhookWindowsHookEx(hKeyboardHook);
+
     return 0;
 }
