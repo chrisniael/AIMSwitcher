@@ -34,19 +34,6 @@ void SwitchInputMethodMode(int mode) {
 	SendMessage(hIMEWnd, WM_IME_CONTROL, IMC_SETCONVERSIONMODE, static_cast<LPARAM>(mode));
 }
 
-void ShowUsage() {
-	std::cout
-		<< "AIMSwitcher, An Input Method Switcher\n"
-		<< "Usage: AIMSwitcher [OPTION]... [ARG]...\n"
-		<< "\n"
-		<< "  --im [INPUTMETHOD]                              show the current input method if INPUTMETHOD is omitted,\n"
-		<< "                                                  otherwise switch to the specified input method\n"
-		<< "  --imm [INPUTMETHODMODE]                         show the current input method mode if INPUTMETHODMODE is omitted,\n"
-		<< "                                                  otherwise switch to the specified input method mode\n"
-		<< "  --immt [INPUTMETHODMODE1] [INPUTMETHODMODE2]    toggle current input method mode between INPUTMETHODMODE1 and INPUTMETHODMODE2"
-		<< std::endl;
-}
-
 // È«¾Ö¹³×Ó¾ä±ú
 HHOOK hKeyboardHook;
 
