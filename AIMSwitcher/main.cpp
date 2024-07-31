@@ -39,10 +39,11 @@ void ShowUsage() {
         << "AIMSwitcher, An Input Method Switcher\n"
         << "Usage: AIMSwitcher [OPTION]... [ARG]...\n"
         << "\n"
-        << "  --im [INPUTMETHOD]      show the current input method if INPUTMETHOD is omitted,\n"
-        << "                          otherwise switch to the specified input method\n"
-        << "  --imm [INPUTMETHODMODE] show the current input method mode if INPUTMETHODMODE is omitted,\n"
-        << "                          otherwise switch to the specified input method mode\n"
+        << "  --im [INPUTMETHOD]                              show the current input method if INPUTMETHOD is omitted,\n"
+        << "                                                  otherwise switch to the specified input method\n"
+        << "  --imm [INPUTMETHODMODE]                         show the current input method mode if INPUTMETHODMODE is omitted,\n"
+        << "                                                  otherwise switch to the specified input method mode\n"
+        << "  --immt [INPUTMETHODMODE1] [INPUTMETHODMODE2]    toggle current input method mode"
         << std::endl;
 }
 
@@ -61,6 +62,17 @@ int main(int argc, char** argv) {
             std::cout << GetCurrentInputMethodMode() << std::endl;
         else
             SwitchInputMethodMode(atoi(argv[2]));
+    }
+    else if (strcmp(argv[1], "--immt") == 0 && argc == 4) {
+        int mode1 = atoi(argv[2]);
+        int mode2 = atoi(argv[3]);
+        int curMode = GetCurrentInputMethodMode();
+        if (curMode == mode1) {
+            SwitchInputMethodMode(mode2);
+        }
+        else {
+            SwitchInputMethodMode(mode1);
+        }
     }
     else {
         ShowUsage();
