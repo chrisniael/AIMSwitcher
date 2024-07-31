@@ -43,7 +43,7 @@ void ShowUsage() {
         << "                                                  otherwise switch to the specified input method\n"
         << "  --imm [INPUTMETHODMODE]                         show the current input method mode if INPUTMETHODMODE is omitted,\n"
         << "                                                  otherwise switch to the specified input method mode\n"
-        << "  --immt [INPUTMETHODMODE1] [INPUTMETHODMODE2]    toggle current input method mode"
+        << "  --immt [INPUTMETHODMODE1] [INPUTMETHODMODE2]    toggle current input method mode between INPUTMETHODMODE1 and INPUTMETHODMODE2"
         << std::endl;
 }
 
